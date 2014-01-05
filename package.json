@@ -1,0 +1,22 @@
+{
+  "name": "degent",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test/test.js --harmony"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "lie": "~2.4.0"
+  },
+  "repository": "https://github.com/calvinmetcalf/degent",
+  "devDependencies": {
+    "chai": "~1.8.1",
+    "mocha": "~1.16.2",
+    "mocha-as-promised": "~2.0.0",
+    "chai-as-promised": "~4.1.0",
+    "istanbul": "~0.2.3"
+  }
+}
