@@ -1,6 +1,10 @@
 degent
 ===
 
+```bash
+npm install degent
+```
+
 Takes a generator function and returns a promise for its return value, any yields in the generator are assumed to be promises and the resolved value is passed back in, in other words
 
 ```javascript

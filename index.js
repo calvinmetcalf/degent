@@ -11,24 +11,28 @@ module.exports = function(oGen){
       params.push(arguments[i++]);
     }
   }
-  const gen = oGen.apply(undefined, params);
   return new Promise(function(fulfill, reject){
-    function checkDone(iter){
-      if(iter.done){
-        fulfill(iter.value);
-      }else{
-        return iter.value;
-      }
-    };
+    const gen = oGen.apply(undefined, params);
     function nextStep(iter){
-      const next = checkDone(gen.next(iter));
+      const next = checkDone(gen.next(iter),fulfill);
       if(next){
         return next.then(nextStep);
       }
     };
-    const deal = checkDone(gen.next());
-    if(deal){
-      deal.then(nextStep).then(null,reject);
+    const done = checkDone(gen.next(),fulfill);
+    if(done){
+      done.then(nextStep).then(null,reject);
     }
   });
+};
+function checkDone(iter, fulfill){
+  if(iter.done){
+    fulfill(iter.value);
+  }else if (iter.value && iter.value.then){
+    return iter.value;
+  }else{
+    return new Promise(function(yes){
+      yes(iter.value);
+    });
+  }
 };

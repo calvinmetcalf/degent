@@ -11,6 +11,9 @@ function async(num,value){
   });
 }
 var asyncThing = function*(seed){
+  if(!seed){
+    throw new Error('need a seed');
+  }
   const a = yield async(5,seed);
   const b = yield async(5,a*2);
   return async(5,b*2);
@@ -18,5 +21,19 @@ var asyncThing = function*(seed){
 describe('degent',function(){
   it('should work',function(){
     return degent(asyncThing,2).should.become(8);
-  })
+  });
+  it('should fail well',function(){
+    return degent(asyncThing).should.be.rejected;
+  });
+  it('should handle no yields',function(){
+    return degent(function*(){
+      return async(5,9)
+    }).should.become(9);
+  });
+  it('should handle non promise yield',function(){
+    return degent(function*(){
+      const a = yield 8;
+      return a + 1;
+    }).should.become(9);
+  });
 });
