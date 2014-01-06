@@ -5,7 +5,7 @@ degent
 npm install degent
 ```
 
-Takes a generator function and returns a promise for its return value, any yields in the generator are assumed to be promises and the resolved value is passed back in, in other words
+Takes a generator function and returns a promise for its return value, any yields in the generator which have a then method are assumed to be promises and the resolved value is passed back in, in other words
 
 ```javascript
 // simply returns a function with a promise which resolves to the value
@@ -25,5 +25,7 @@ degent(function*(){
   //prints 125;
 });
 ``` 
+
+if function is returned it is assumed to be a thunk and called node style, otherwise the value is passed back in.
 
 requires --harmony flag, also you can pass additional arguments to degent which are passed along to the generator function.

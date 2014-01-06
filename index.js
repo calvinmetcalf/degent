@@ -14,25 +14,47 @@ module.exports = function(oGen){
   return new Promise(function(fulfill, reject){
     const gen = oGen.apply(undefined, params);
     function nextStep(iter){
-      const next = checkDone(gen.next(iter),fulfill);
+      const next = checkDone(gen.next(iter),fulfill,reject);
       if(next){
         return next.then(nextStep);
       }
     };
-    const done = checkDone(gen.next(),fulfill);
+    const done = checkDone(gen.next(),fulfill,reject);
     if(done){
       done.then(nextStep).then(null,reject);
     }
   });
 };
-function checkDone(iter, fulfill){
+function checkDone(iter, fulfill, reject){
   if(iter.done){
-    fulfill(iter.value);
+    if(iter.value&&iter.value.then){
+      fulfill(iter.value);
+    }else if(typeof iter.value === 'function'){
+      iter.value(function(err,data){
+        if(err){
+          reject(err);
+        }else{
+          fulfill(data);
+        }
+      });
+    }else{
+      fulfill(iter.value);
+    }
   }else if (iter.value && iter.value.then){
     return iter.value;
   }else{
-    return new Promise(function(yes){
-      yes(iter.value);
+    return new Promise(function(yes, no){
+      if(typeof iter.value === 'function'){
+        iter.value(function(err,data){
+          if(err){
+            no(err);
+          }else{
+            yes(data)
+          }
+        })
+      }else{
+        yes(iter.value);
+      }
     });
   }
 };
